@@ -129,15 +129,15 @@ export class Keychain {
         this.authTokenPromise = Promise.resolve(decodeBits(authToken))
     }
 
-    async encryptStream (stream) {
+    async encryptStream (stream:InstanceType<typeof ReadableStream>) {
         if (!(stream instanceof ReadableStream)) {
-            throw new TypeError('stream')
+            throw new TypeError('This is not a readable stream')
         }
         const mainKey = await this.mainKeyPromise
         return encryptStream(stream, mainKey)
     }
 
-    async decryptStream (encryptedStream) {
+    async decryptStream (encryptedStream:ReadableStream) {
         if (!(encryptedStream instanceof ReadableStream)) {
             throw new TypeError('encryptedStream')
         }
