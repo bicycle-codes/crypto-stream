@@ -70,7 +70,8 @@
   "keywords": [
     "cryptography",
     "encryption",
-    "stream"
+    "stream",
+    "browser"
   ],
   "bugs": {
     "url": "https://github.com/bicycle-codes/crypto-stream/issues"

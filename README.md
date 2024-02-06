@@ -1,6 +1,7 @@
 # crypto stream
 ![tests](https://github.com/bicycle-codes/crypto-stream/actions/workflows/nodejs.yml/badge.svg)
 [![module](https://img.shields.io/badge/module-ESM%2FCJS-blue?style=flat-square)](README.md)
+[![types](https://img.shields.io/npm/types/@bicycle-codes/crypto-stream?style=flat-square)](README.md)
 [![license](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
 
 Streaming encryption for the browser, based on
