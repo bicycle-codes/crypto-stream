@@ -25,7 +25,7 @@ const encoder = new TextEncoder()
  * plaintextSize: int containing plaintext size
  * rs:            int containing record size, optional
  */
-export function encryptedSize (plaintextSize:number, rs = RECORD_SIZE) {
+export function encryptedSize (plaintextSize:number, rs = RECORD_SIZE):number {
     if (!Number.isInteger(plaintextSize)) {
         throw new TypeError('plaintextSize')
     }
@@ -47,7 +47,7 @@ export function encryptedSize (plaintextSize:number, rs = RECORD_SIZE) {
  * encryptedSize: int containing encrypted size
  * rs:            int containing record size, optional
  */
-export function plaintextSize (encryptedSize, rs = RECORD_SIZE) {
+export function plaintextSize (encryptedSize:number, rs = RECORD_SIZE):number {
     if (!Number.isInteger(encryptedSize)) {
         throw new TypeError('encryptedSize')
     }
@@ -55,11 +55,12 @@ export function plaintextSize (encryptedSize, rs = RECORD_SIZE) {
         throw new TypeError('rs')
     }
 
-    const chunkMetaLength = TAG_LENGTH + 1 // Chunk metadata, tag and delimiter
+    const chunkMetaLength = TAG_LENGTH + 1  // Chunk metadata, tag and delimiter
     const encryptedRecordsSize = encryptedSize - HEADER_LENGTH
     return (
         encryptedRecordsSize -
-    chunkMetaLength * Math.ceil(encryptedRecordsSize / rs)
+        chunkMetaLength *
+        Math.ceil(encryptedRecordsSize / rs)
     )
 }
 

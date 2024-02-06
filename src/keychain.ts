@@ -19,7 +19,12 @@ function arrayToB64 (array) {
     return base64.fromByteArray(array)
 }
 
-function arrayToB64Url (array) {
+/**
+ * Return the given Uint8Array as a base64url string.
+ * @param array Uint8Array
+ * @returns `base64url` encoded string
+ */
+function arrayToB64Url (array:Uint8Array):string {
     return base64
         .fromByteArray(array)
         .replace(/\+/g, '-')
@@ -103,33 +108,38 @@ export class Keychain {
             .then(authTokenBuf => new Uint8Array(authTokenBuf))
     }
 
-    get keyB64 () {
+    /**
+     * Get the main key as a `base64url` encoded string
+     */
+    get keyB64 ():string {
         return arrayToB64Url(this.key)
     }
 
-    get saltB64 () {
+    get saltB64 ():string {
         return arrayToB64(this.salt)
     }
 
-    async authToken () {
+    async authToken ():Promise<ArrayBuffer> {
         return await this.authTokenPromise
     }
 
-    async authTokenB64 () {
+    async authTokenB64 ():Promise<string> {
         const authToken = await this.authToken()
         return arrayToB64(authToken)
     }
 
-    async authHeader () {
+    async authHeader ():Promise<string> {
         const authTokenB64 = await this.authTokenB64()
         return `Bearer sync-v1 ${authTokenB64}`
     }
 
-    setAuthToken (authToken:string|Uint8Array|null) {
+    setAuthToken (authToken:string|Uint8Array|null):void {
         this.authTokenPromise = Promise.resolve(decodeBits(authToken))
     }
 
-    async encryptStream (stream:InstanceType<typeof ReadableStream>) {
+    async encryptStream (
+        stream:ReadableStream
+    ):Promise<ReadableStream> {
         if (!(stream instanceof ReadableStream)) {
             throw new TypeError('This is not a readable stream')
         }
@@ -137,15 +147,32 @@ export class Keychain {
         return encryptStream(stream, mainKey)
     }
 
-    async decryptStream (encryptedStream:ReadableStream) {
+    async decryptStream (
+        encryptedStream:ReadableStream
+    ):Promise<ReadableStream> {
         if (!(encryptedStream instanceof ReadableStream)) {
-            throw new TypeError('encryptedStream')
+            throw new TypeError('encryptedStream is not a ReadableStream')
         }
         const mainKey = await this.mainKeyPromise
         return decryptStream(encryptedStream, mainKey)
     }
 
-    async decryptStreamRange (offset, length, totalEncryptedLength) {
+    /**
+     * Returns an object containing `ranges`, an array of objects
+     * containing `offset` and `length` integers specifying the encrypted byte
+     * ranges that are needed to decrypt the client's specified range, and a
+     * `decrypt` function.
+     *
+     * @param {number} offset Integer
+     * @param {number} length Integer
+     * @param {number} totalEncryptedLength Integer
+     * @returns {Promise<{ ranges, decrypt }>}
+     */
+    async decryptStreamRange (
+        offset:number,
+        length:number,
+        totalEncryptedLength:number
+    ):Promise<{ ranges:{ offset:number, length:number }[], decrypt }> {
         if (!Number.isInteger(offset)) {
             throw new TypeError('offset')
         }
@@ -160,7 +187,7 @@ export class Keychain {
         return decryptStreamRange(mainKey, offset, length, totalEncryptedLength)
     }
 
-    async encryptMeta (meta) {
+    async encryptMeta (meta:Uint8Array):Promise<Uint8Array> {
         if (!(meta instanceof Uint8Array)) {
             throw new TypeError('meta')
         }
@@ -187,7 +214,7 @@ export class Keychain {
         return ivEncryptedMeta
     }
 
-    async decryptMeta (ivEncryptedMeta) {
+    async decryptMeta (ivEncryptedMeta:Uint8Array):Promise<Uint8Array> {
         if (!(ivEncryptedMeta instanceof Uint8Array)) {
             throw new Error('ivEncryptedMeta')
         }
