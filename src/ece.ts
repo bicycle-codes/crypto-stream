@@ -106,18 +106,19 @@ export function decryptStream (input, secretKey, rs = RECORD_SIZE) {
 }
 
 /**
- * Given a desired plaintext byte range specified by `offset` and `length`, and the
- * total size of the encrypted stream in `totalEncryptedLength`, provides a mechanism to
- * decrypt that range.
+ * Given a desired plaintext byte range specified by `offset` and `length`,
+ * and the total size of the encrypted stream in `totalEncryptedLength`,
+ * provides a mechanism to decrypt that range.
  *
  * To decrypt an arbitrary plaintext range, the client will need to supply multiple
- * (currently always two) ranges of encrypted data. `decryptStreamRange` returns a promise
- * that resolves to an object containing `ranges`, which is an array of { offset, length }
- * entries specifying the needed encrypted byte ranges, and `encrypt`, a callback function.
+ * (currently always two) ranges of encrypted data. `decryptStreamRange`
+ * returns a promise that resolves to an object containing `ranges`, which is
+ * an array of { offset, length } entries specifying the needed encrypted byte
+ * ranges, and `encrypt`, a callback function.
  *
- * Once the client has gathered an array `streams` of encrypted ReadableStreams, one for
- * each of these ranges, it should call `encrypt(streams)`. This will then return the final
- * plaintext ReadableStream.
+ * Once the client has gathered an array `streams` of encrypted ReadableStreams,
+ * one for each of these ranges, it should call `encrypt(streams)`. This will
+ * then return the final plaintext ReadableStream.
  *
  * secretKey:             CryptoKey containing secret key of size KEY_LENGTH
  * offset:                int containing plaintext byte offset at which to start decryption
@@ -125,9 +126,18 @@ export function decryptStream (input, secretKey, rs = RECORD_SIZE) {
  * totalEncryptedLength:  The total number of bytes in the encrypted stream
  * rs:                    int containing record size, optional
  */
-export function decryptStreamRange (secretKey, offset, length, totalEncryptedLength, rs = RECORD_SIZE) {
+export function decryptStreamRange (
+    secretKey:CryptoKey,
+    offset:number,
+    length:number,
+    totalEncryptedLength:number,
+    rs:number = RECORD_SIZE
+):{
+    ranges:{ offset:number, length:number }[],
+    decrypt:(streams:ReadableStream[])=>ReadableStream
+} {
     if (!Number.isInteger(rs)) {
-        throw new TypeError('rs')
+        throw new TypeError('Missing record size (rs)')
     }
 
     // Chunk metadata, tag and delimiter

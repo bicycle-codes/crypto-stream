@@ -172,7 +172,10 @@ export class Keychain {
         offset:number,
         length:number,
         totalEncryptedLength:number
-    ):Promise<{ ranges:{ offset:number, length:number }[], decrypt }> {
+    ):Promise<{
+        ranges:{ offset:number, length:number }[],
+        decrypt:(streams:ReadableStream[])=>ReadableStream
+    }> {
         if (!Number.isInteger(offset)) {
             throw new TypeError('offset')
         }

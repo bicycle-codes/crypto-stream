@@ -198,11 +198,16 @@ consumes the data in `encryptedStream` and returns a plaintext version.
 ### `keychain.decryptStreamRange(offset, length, totalEncryptedLength)`
 
 ```ts
-decryptStreamRange (
+function decryptStreamRange (
+    secretKey:CryptoKey,
     offset:number,
     length:number,
-    totalEncryptedLength:number
-):Promise<{ ranges:{ offset:number, length:number }[], decrypt }>
+    totalEncryptedLength:number,
+    rs:number = RECORD_SIZE
+):{
+    ranges:{ offset:number, length:number }[],
+    decrypt:(streams:ReadableStream[])=>ReadableStream
+}
 ```
 
 Returns a `Promise` that resolves to a object containing `ranges`, which is an array of
