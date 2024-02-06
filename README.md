@@ -47,7 +47,7 @@ local `vite` server.
 
 ### `new Keychain([key, [salt]])`
 ```ts
-constructor (key?:string|Uint8Array|null, salt?:string|Uint8Array|null)
+constructor (key?:string|Uint8Array, salt?:string|Uint8Array)
 ```
 
 Type: `Class`

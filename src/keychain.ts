@@ -61,7 +61,7 @@ export class Keychain {
     metaKeyPromise:Promise<CryptoKey>
     authTokenPromise:Promise<ArrayBuffer>
 
-    constructor (key?:string|Uint8Array|null, salt?:string|Uint8Array|null) {
+    constructor (key?:string|Uint8Array, salt?:string|Uint8Array) {
         this.key = decodeBits(key)
         this.salt = decodeBits(salt)
 
