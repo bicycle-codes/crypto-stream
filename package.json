@@ -1,7 +1,6 @@
 {
   "name": "@bicycle-codes/crypto-stream",
   "description": "Streaming encryption for the browser",
-  "private": true,
   "type": "module",
   "version": "0.0.0",
   "main": "dist/index.js",
@@ -61,6 +60,7 @@
   "author": "nichoth <nichoth@gmail.com> (https://nichoth.com)",
   "license": "MIT",
   "directories": {
+    "example": "example",
     "test": "test"
   },
   "repository": {
