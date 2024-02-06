@@ -7,6 +7,7 @@ import { concatStreams } from './concat-streams.js'
 import { transformStream } from './transform-stream.js'
 import { ExtractTransformer } from './extract-transformer.js'
 import { SliceTransformer } from './slice-transformer.js'
+import { webcrypto } from 'one-webcrypto'
 
 const MODE_ENCRYPT = 'encrypt'
 const MODE_DECRYPT = 'decrypt'
@@ -200,7 +201,7 @@ function checkSecretKey (secretKey) {
 
 function generateSalt (len) {
     const salt = new Uint8Array(len)
-    crypto.getRandomValues(salt)
+    webcrypto.getRandomValues(salt)
     return salt
 }
 
@@ -248,7 +249,7 @@ class ECETransformer {
     }
 
     async generateKey () {
-        return crypto.subtle.deriveKey(
+        return webcrypto.subtle.deriveKey(
             {
                 name: 'HKDF',
                 hash: 'SHA-256',
@@ -266,7 +267,7 @@ class ECETransformer {
     }
 
     async generateNonceBase () {
-        const nonceBaseBuf = await crypto.subtle.deriveBits(
+        const nonceBaseBuf = await webcrypto.subtle.deriveBits(
             {
                 name: 'HKDF',
                 hash: 'SHA-256',
@@ -358,7 +359,7 @@ class ECETransformer {
 
         if (!this.key) throw new Error('not key')  // for TS
 
-        const encryptedRecordBuf = await crypto.subtle.encrypt(
+        const encryptedRecordBuf = await webcrypto.subtle.encrypt(
             {
                 name: 'AES-GCM',
                 iv: nonce,
@@ -375,7 +376,7 @@ class ECETransformer {
         if (!this.key) throw new Error('not key')  // for TS
 
         const nonce = this.generateNonce(seq)
-        const paddedRecordBuf = await crypto.subtle.decrypt(
+        const paddedRecordBuf = await webcrypto.subtle.decrypt(
             {
                 name: 'AES-GCM',
                 iv: nonce,

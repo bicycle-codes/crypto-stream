@@ -5,8 +5,8 @@
  * @param {ReadableStream[]} inputStreams
  * @returns ReadableStream
  */
-export function concatStreams (inputStreams) {
-    let currentReader = null
+export function concatStreams (inputStreams:ReadableStream[]) {
+    let currentReader:ReadableStreamDefaultReader|null = null
 
     // Move to the next stream
     const nextStream = (controller) => {
@@ -28,6 +28,7 @@ export function concatStreams (inputStreams) {
             // eslint-disable-next-line no-unmodified-loop-condition
             while (currentReader !== null) {
                 const { value, done } = await currentReader.read()
+
                 if (done) {
                     nextStream(controller)
                 } else {

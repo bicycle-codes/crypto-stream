@@ -9,18 +9,22 @@
  */
 
 export class ExtractTransformer {
-    constructor (offset, length) {
-    // desired range to extract
-        this.extractStart = offset
-        this.extractEnd = offset + length // exclusive end
+    extractStart:number
+    extractEnd:number
+    offset:number
 
-        this.offset = 0 // current offset into input stream
+    constructor (offset, length) {
+        // desired range to extract
+        this.extractStart = offset
+        this.extractEnd = offset + length  // exclusive end
+
+        this.offset = 0  // current offset into input stream
     }
 
-    transform (chunk, controller) {
-    // The start and end of `chunk` relative to the entire input stream
+    transform (chunk:Uint8Array, controller:TransformStreamDefaultController) {
+        // The start and end of `chunk` relative to the entire input stream
         const chunkStart = this.offset
-        const chunkEnd = this.offset + chunk.byteLength // exclusive end
+        const chunkEnd = this.offset + chunk.byteLength  // exclusive end
         this.offset = chunkEnd
 
         // What part of `chunk` belongs in the output stream?
@@ -35,9 +39,11 @@ export class ExtractTransformer {
         controller.enqueue(chunk.subarray(sliceStart, sliceEnd))
     }
 
-    flush (controller) {
+    flush (controller:TransformStreamDefaultController) {
         if (this.offset < this.extractEnd) {
-            controller.error(new Error('Stream passed through ExtractTransformer ended early'))
+            controller.error(
+                new Error('Stream passed through ExtractTransformer ended early')
+            )
         }
     }
 }

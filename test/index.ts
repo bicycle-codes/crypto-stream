@@ -1,5 +1,6 @@
 import { test } from '@nichoth/tapzero'
 import base64 from 'base64-js'
+import { webcrypto } from 'one-webcrypto'
 import { Keychain } from '../src/index.js'
 
 test('keychain properties', async t => {
@@ -31,8 +32,8 @@ test('keychain properties', async t => {
 })
 
 test('keychain from given key and salt (Uint8Array)', async t => {
-    const key = crypto.getRandomValues(new Uint8Array(16))
-    const salt = crypto.getRandomValues(new Uint8Array(16))
+    const key = webcrypto.getRandomValues(new Uint8Array(16))
+    const salt = webcrypto.getRandomValues(new Uint8Array(16))
 
     const keychain = new Keychain(key, salt)
 
@@ -41,8 +42,8 @@ test('keychain from given key and salt (Uint8Array)', async t => {
 })
 
 test('keychain from given key and salt (base64)', async t => {
-    const key = crypto.getRandomValues(new Uint8Array(16))
-    const salt = crypto.getRandomValues(new Uint8Array(16))
+    const key = webcrypto.getRandomValues(new Uint8Array(16))
+    const salt = webcrypto.getRandomValues(new Uint8Array(16))
 
     const keychain = new Keychain(
         base64.fromByteArray(key),
@@ -83,7 +84,7 @@ test('keychain throws on invalid key or salt', async t => {
 test('keychain.setAuthTokenB64', async t => {
     const keychain = new Keychain()
 
-    const authToken = crypto.getRandomValues(new Uint8Array(16))
+    const authToken = webcrypto.getRandomValues(new Uint8Array(16))
     keychain.setAuthToken(authToken)
 
     t.deepEqual(await keychain.authToken(), authToken)

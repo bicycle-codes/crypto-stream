@@ -1,10 +1,10 @@
+import { webcrypto } from 'one-webcrypto'
+import base64 from 'base64-js'
 import {
     decryptStream,
     decryptStreamRange,
     encryptStream
 } from './ece.js'
-
-import base64 from 'base64-js'
 
 export {
     encryptedSize,
@@ -38,7 +38,7 @@ function decodeBits (bitsB64?:Uint8Array|string|null):Uint8Array {
     } else if (typeof bitsB64 === 'string') {
         result = b64ToArray(bitsB64)
     } else if (bitsB64 == null) {
-        result = crypto.getRandomValues(new Uint8Array(16))
+        result = webcrypto.getRandomValues(new Uint8Array(16))
     } else {
         throw new Error('Must be Uint8Array, string, or nullish')
     }
@@ -60,7 +60,7 @@ export class Keychain {
         this.key = decodeBits(key)
         this.salt = decodeBits(salt)
 
-        this.mainKeyPromise = crypto.subtle.importKey(
+        this.mainKeyPromise = webcrypto.subtle.importKey(
             'raw',
             this.key,
             'HKDF',
@@ -70,7 +70,7 @@ export class Keychain {
 
         this.metaKeyPromise = this.mainKeyPromise
             .then(mainKey =>
-                crypto.subtle.deriveKey(
+                webcrypto.subtle.deriveKey(
                     {
                         name: 'HKDF',
                         hash: 'SHA-256',
@@ -89,7 +89,7 @@ export class Keychain {
 
         this.authTokenPromise = this.mainKeyPromise
             .then(mainKey =>
-                crypto.subtle.deriveBits(
+                webcrypto.subtle.deriveBits(
                     {
                         name: 'HKDF',
                         hash: 'SHA-256',
@@ -165,10 +165,10 @@ export class Keychain {
             throw new TypeError('meta')
         }
 
-        const iv = crypto.getRandomValues(new Uint8Array(IV_LENGTH))
+        const iv = webcrypto.getRandomValues(new Uint8Array(IV_LENGTH))
         const metaKey = await this.metaKeyPromise
 
-        const encryptedMetaBuf = await crypto.subtle.encrypt(
+        const encryptedMetaBuf = await webcrypto.subtle.encrypt(
             {
                 name: 'AES-GCM',
                 iv,
@@ -196,7 +196,7 @@ export class Keychain {
         const encryptedMeta = ivEncryptedMeta.slice(IV_LENGTH)
 
         const metaKey = await this.metaKeyPromise
-        const metaBuf = await crypto.subtle.decrypt(
+        const metaBuf = await webcrypto.subtle.decrypt(
             {
                 name: 'AES-GCM',
                 iv,

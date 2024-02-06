@@ -1,24 +1,43 @@
-# template ts browser
-![tests](https://github.com/nichoth/template-ts-browser/actions/workflows/nodejs.yml/badge.svg)
-[![types](https://img.shields.io/npm/types/@nichoth/catch-links?style=flat-square)](README.md)
+# crypto stream
+![tests](https://github.com/bicycle-codes/crypto-stream/actions/workflows/nodejs.yml/badge.svg)
 [![module](https://img.shields.io/badge/module-ESM%2FCJS-blue?style=flat-square)](README.md)
 [![license](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
 
-A template for typescript *dependency* modules that run in a browser environment. Uses `tape-run` for tests in a browser. See [template-ts](https://github.com/nichoth/template-ts) for the same thing but targeting Node.
+Streaming encryption for the browser, based on [Encrypted Content-Encoding for HTTP (RFC 8188)](https://tools.ietf.org/html/rfc8188)
 
-## use
-1. Use the template button in github. Or clone this then `rm -rf .git && git init`. Then `npm i && npm init`.
+## install
+```sh
+npm i -S @bicycle-codes/crypto-stream
+```
 
-2. Edit the source code in `src/index.ts`.
+## fork
+This is a fork of [SocketDev/wormhole-crypto](https://github.com/SocketDev/wormhole-crypto), just adding types.
 
-## featuring
+## example
 
-* compile the source to both ESM and CJS format, and put compiled files in `dist`.
-* ignore `dist` and `*.js` in git, but don't ignore them in npm. That way we don't commit any compiled code to git, but it is available to consumers.
-* use npm's `prepublishOnly` hook to compile the code before publishing to npm.
-* use `exports` field in `package.json` to make sure the right format is used by consumers.
-* `preversion` npm hook -- lint via `standardx`.
-* `postversion` npm hook -- `git push && git push --tags && npm publish`
-* eslint via [standardx](https://www.npmjs.com/package/standardx) -- `npm run lint`
-* tests run in a browser environment via `tape-run` -- see `npm test`. Includes `tap` testing tools -- [tapzero](https://github.com/nichoth/tapzero) and [tap-arc](https://www.npmjs.com/package/tap-arc)
-* CI via github actions
+```js
+import { Keychain } from '@bicycle-codes/crypto-stream'
+
+// Create a new keychain. Since no arguments are specified, the key and salt
+// are generated.
+const keychain = new Keychain()
+
+// Get a WHATWG stream somehow, from fetch(), from a Blob(), etc.
+const stream = getStream()
+
+// Create an encrypted version of that stream
+const encryptedStream = await keychain.encryptStream(stream)
+
+// Normally you'd now use `encryptedStream`, e.g. in fetch(), etc.
+// However, for this example, we'll just decrypt the stream immediately
+const plaintextStream = await keychain.decryptStream(encryptedStream)
+
+// Now, you can use `plaintextStream` and it will be identical to if you had
+// used `stream`.
+```
+
+## credits
+
+Thank you [Feross](https://github.com/feross) and [SocketDev](https://github.com/SocketDev) team.
+
+This is a fork of the [wormhole-crypto](https://github.com/SocketDev/wormhole-crypto) package, just adding some types.
