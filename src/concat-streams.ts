@@ -1,11 +1,11 @@
 /**
- * Concatenates the array of ReadableStreams passed in `inputStreams` into a single
- * ReadableStream.
+ * Concatenates the array of ReadableStreams passed in `inputStreams`
+ * into a single ReadableStream.
  *
  * @param {ReadableStream[]} inputStreams
- * @returns ReadableStream
+ * @returns {ReadableStream}
  */
-export function concatStreams (inputStreams:ReadableStream[]) {
+export function concatStreams (inputStreams:ReadableStream[]):ReadableStream {
     let currentReader:ReadableStreamDefaultReader|null = null
 
     // Move to the next stream

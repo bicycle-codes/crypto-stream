@@ -96,8 +96,15 @@ export function encryptStream (
  * secretKey: CryptoKey containing secret key of size KEY_LENGTH
  * rs:        int containing record size, optional
  */
-export function decryptStream (input, secretKey, rs = RECORD_SIZE) {
-    const stream = transformStream(input, new SliceTransformer(HEADER_LENGTH, rs)).readable
+export function decryptStream (
+    input:ReadableStream,
+    secretKey:CryptoKey,
+    rs = RECORD_SIZE
+):ReadableStream {
+    const stream = transformStream(
+        input,
+        new SliceTransformer(HEADER_LENGTH, rs)
+    ).readable
 
     return transformStream(
         stream,
@@ -110,14 +117,14 @@ export function decryptStream (input, secretKey, rs = RECORD_SIZE) {
  * and the total size of the encrypted stream in `totalEncryptedLength`,
  * provides a mechanism to decrypt that range.
  *
- * To decrypt an arbitrary plaintext range, the client will need to supply multiple
- * (currently always two) ranges of encrypted data. `decryptStreamRange`
- * returns a promise that resolves to an object containing `ranges`, which is
- * an array of { offset, length } entries specifying the needed encrypted byte
- * ranges, and `encrypt`, a callback function.
+ * To decrypt an arbitrary plaintext range, the client will need to supply
+ * multiple (currently always two) ranges of encrypted data.
+ * `decryptStreamRange` returns a promise that resolves to an object containing
+ * `ranges`, which is an array of { offset, length } entries specifying the
+ * needed encrypted byte ranges, and `encrypt`, a callback function.
  *
  * Once the client has gathered an array `streams` of encrypted ReadableStreams,
- * one for each of these ranges, it should call `encrypt(streams)`. This will
+ * one for each of these ranges, it should call `decrypt(streams)`. This will
  * then return the final plaintext ReadableStream.
  *
  * secretKey:             CryptoKey containing secret key of size KEY_LENGTH
@@ -171,13 +178,17 @@ export function decryptStreamRange (
                 length: dataEnd - dataOffset
             }
         ],
+
         decrypt: (streams) => {
             if (!(streams.every(stream => stream instanceof ReadableStream))) {
-                throw new TypeError('stream')
+                throw new TypeError('Stream is not a ReadableStream')
             }
 
-            // Combine the header and data streams, and then slice how ECETransformer expects
-            const encryptedStream = transformStream(concatStreams(streams), new SliceTransformer(HEADER_LENGTH, rs)).readable
+            // Combine the header and data streams, and then slice how
+            // ECETransformer expects
+            const encryptedStream = transformStream(
+                concatStreams(streams), new SliceTransformer(HEADER_LENGTH, rs)
+            ).readable
 
             // Plaintext stream of needed records
             const plaintextStream = transformStream(
@@ -190,12 +201,15 @@ export function decryptStreamRange (
             ).readable
 
             // Extract the exact needed bytes from the plaintext stream
-            return transformStream(plaintextStream, new ExtractTransformer(offsetInStartRecord, length)).readable
+            return transformStream(
+                plaintextStream,
+                new ExtractTransformer(offsetInStartRecord, length)
+            ).readable
         }
     }
 }
 
-function checkSecretKey (secretKey) {
+function checkSecretKey (secretKey:CryptoKey):void {
     if (secretKey.type !== 'secret') {
         throw new Error('Invalid key: type must be "secret"')
     }
@@ -210,7 +224,7 @@ function checkSecretKey (secretKey) {
     }
 }
 
-function generateSalt (len) {
+function generateSalt (len:number):Uint8Array {
     const salt = new Uint8Array(len)
     webcrypto.getRandomValues(salt)
     return salt
@@ -220,22 +234,22 @@ class ECETransformer {
     mode:'encrypt'|'decrypt'
     secretKey:CryptoKey
     rs:number
-    salt:Uint8Array
-    seekOpts:{ startSeq?, endSeq?, endsPrematurely? }
+    salt:Uint8Array|null
+    seekOpts:Partial<{ startSeq, endSeq, endsPrematurely }>
     seq:number
-    prevChunk
-    nonceBase
+    prevChunk:Uint8Array|null
+    nonceBase:Uint8Array|null
     key:CryptoKey|null
 
     constructor (
-        mode,
+        mode:'encrypt'|'decrypt',
         secretKey:CryptoKey,
         rs:number,
-        salt,
+        salt:Uint8Array|null,
         seekOpts = {}
     ) {
         if (mode !== MODE_ENCRYPT && mode !== MODE_DECRYPT) {
-            throw new Error('mode must be either encrypt or decrypt')
+            throw new Error("mode must be either 'encrypt' or 'decrypt'")
         }
         checkSecretKey(secretKey)
         if (salt != null && salt.byteLength !== KEY_LENGTH) {
@@ -259,7 +273,7 @@ class ECETransformer {
         this.key = null
     }
 
-    async generateKey () {
+    async generateKey ():Promise<CryptoKey> {
         return webcrypto.subtle.deriveKey(
             {
                 name: 'HKDF',
@@ -277,7 +291,7 @@ class ECETransformer {
         )
     }
 
-    async generateNonceBase () {
+    async generateNonceBase ():Promise<Uint8Array> {
         const nonceBaseBuf = await webcrypto.subtle.deriveBits(
             {
                 name: 'HKDF',
@@ -291,10 +305,12 @@ class ECETransformer {
         return new Uint8Array(nonceBaseBuf)
     }
 
-    generateNonce (seq) {
+    generateNonce (seq:number):Uint8Array {
         if (seq > 0xffffffff) {
             throw new Error('record sequence number exceeds limit')
         }
+        if (!this.nonceBase) throw new Error('Not nonce base')
+
         const nonce = this.nonceBase.slice()
         const dv = new DataView(nonce.buffer, nonce.byteOffset, nonce.byteLength)
         const m = dv.getUint32(nonce.byteLength - 4)
@@ -303,7 +319,7 @@ class ECETransformer {
         return nonce
     }
 
-    pad (data, isLast) {
+    pad (data:Uint8Array, isLast:boolean):Uint8Array {
         const len = data.byteLength
         if (len + TAG_LENGTH >= this.rs) {
             throw new Error('data too large for record size')
@@ -323,7 +339,7 @@ class ECETransformer {
         return result
     }
 
-    unpad (data, isLast) {
+    unpad (data:Uint8Array, isLast:boolean):Uint8Array {
         for (let i = data.byteLength - 1; i >= 0; i -= 1) {
             if (data[i] !== 0) {
                 if (isLast) {
@@ -335,13 +351,15 @@ class ECETransformer {
                         throw new Error('delimiter of not final record is not 1')
                     }
                 }
+
                 return data.slice(0, i)
             }
         }
         throw new Error('no delimiter found')
     }
 
-    createHeader () {
+    createHeader ():Uint8Array {
+        if (!this.salt) throw new Error('Not salt')
         const header = new Uint8Array(HEADER_LENGTH)
         header.set(this.salt)
         const dv = new DataView(header.buffer, header.byteOffset, header.byteLength)
@@ -349,7 +367,7 @@ class ECETransformer {
         return header
     }
 
-    readHeader (buffer) {
+    readHeader (buffer:Uint8Array):{ salt:Uint8Array, rs:number } {
         if (buffer.byteLength !== HEADER_LENGTH) {
             throw new Error('chunk is not expected header length')
         }
@@ -364,9 +382,13 @@ class ECETransformer {
         return header
     }
 
-    async encryptRecord (record, seq, isLast) {
+    async encryptRecord (
+        record:Uint8Array,
+        seq:number,
+        isLast:boolean
+    ):Promise<Uint8Array> {
         const nonce = this.generateNonce(seq)
-        const paddedRecord = this.pad(record, isLast)
+        const paddedRecord:Uint8Array = this.pad(record, isLast)
 
         if (!this.key) throw new Error('not key')  // for TS
 
@@ -383,11 +405,15 @@ class ECETransformer {
         return new Uint8Array(encryptedRecordBuf)
     }
 
-    async decryptRecord (encryptedRecord, seq, isLast) {
+    async decryptRecord (
+        encryptedRecord:Uint8Array,
+        seq:number,
+        isLast:boolean
+    ):Promise<Uint8Array> {
         if (!this.key) throw new Error('not key')  // for TS
 
         const nonce = this.generateNonce(seq)
-        const paddedRecordBuf = await webcrypto.subtle.decrypt(
+        const paddedRecordBuf:ArrayBuffer = await webcrypto.subtle.decrypt(
             {
                 name: 'AES-GCM',
                 iv: nonce,
@@ -400,7 +426,7 @@ class ECETransformer {
         return this.unpad(paddedRecord, isLast)
     }
 
-    async start (controller) {
+    async start (controller:TransformStreamDefaultController) {
         if (this.mode === MODE_ENCRYPT) {
             this.key = await this.generateKey()
             this.nonceBase = await this.generateNonceBase()
@@ -409,13 +435,20 @@ class ECETransformer {
         }
     }
 
-    async transformPrevChunk (isLast, controller) {
+    async transformPrevChunk (
+        isLast:boolean,
+        controller:TransformStreamDefaultController
+    ):Promise<void> {
+        if (!this.prevChunk) throw new Error('not this.prevChunk')
+
         if (this.mode === MODE_ENCRYPT) {
             controller.enqueue(
                 await this.encryptRecord(this.prevChunk, this.seq, isLast)
             )
         } else {
             if (this.seq === -1) {
+                if (!this.prevChunk) throw new Error('not this.prevChunk')
+
                 // the first chunk during decryption contains only the header
                 const header = this.readHeader(this.prevChunk)
                 this.salt = header.salt
@@ -449,21 +482,29 @@ class ECETransformer {
                 }
 
                 controller.enqueue(
-                    await this.decryptRecord(this.prevChunk, this.seq, expectEndPadding)
+                    await this.decryptRecord(
+                        this.prevChunk,
+                        this.seq,
+                        expectEndPadding
+                    )
                 )
             }
         }
+
         this.seq += 1
     }
 
-    async transform (chunk, controller) {
+    async transform (
+        chunk:Uint8Array,
+        controller:TransformStreamDefaultController
+    ):Promise<void> {
         if (this.prevChunk) {
             await this.transformPrevChunk(false, controller)
         }
         this.prevChunk = chunk
     }
 
-    async flush (controller) {
+    async flush (controller:TransformStreamDefaultController):Promise<void> {
         if (this.prevChunk) {
             await this.transformPrevChunk(true, controller)
         }

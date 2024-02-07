@@ -13,7 +13,7 @@ export class ExtractTransformer {
     extractEnd:number
     offset:number
 
-    constructor (offset, length) {
+    constructor (offset:number, length:number) {
         // desired range to extract
         this.extractStart = offset
         this.extractEnd = offset + length  // exclusive end

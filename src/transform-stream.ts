@@ -5,19 +5,22 @@
  * Includes a shim for environments where TransformStream is not available.
  */
 export function transformStream (
-    sourceReadable,
+    sourceReadable:ReadableStream,
     transformer:Transformer
 ):{
     readable:ReadableStream,
     done:Promise<unknown>
 } {
     let transformedReadable:ReadableStream<Uint8Array>
-    let done
+    let done:Promise<void>
 
     if (typeof TransformStream !== 'undefined') {
         // Chrome, Edge, Safari 14.1+
         const transform = new TransformStream(transformer)
 
+        // .pipeTo
+        //  returns a Promise that fulfills when the piping process
+        //  completes successfully
         done = sourceReadable.pipeTo(transform.writable)
         transformedReadable = transform.readable
     } else {
@@ -66,7 +69,8 @@ class TransformStreamSource<T> {
         {
             resolveDone,
             rejectDone
-    }) {  // eslint-disable-line
+        }
+    ) {
         this.readable = readable
         this.transformer = transformer
         this.resolveDone = resolveDone
@@ -77,9 +81,9 @@ class TransformStreamSource<T> {
     }
 
     // async start (controller:ReadableStreamController<T>) {
-    async start (controller:ReadableByteStreamController) {
+    async start (controller:ReadableByteStreamController):Promise<void> {
         this.wrappedController = {
-            desiredSize: 5,
+            desiredSize: controller.desiredSize,
 
             enqueue: (value) => {
                 this.progressMade = true

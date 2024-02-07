@@ -32,7 +32,7 @@ function arrayToB64Url (array:Uint8Array):string {
         .replace(/=/g, '')
 }
 
-function b64ToArray (str) {
+function b64ToArray (str:string):Uint8Array {
     return base64.toByteArray(str + '==='.slice((str.length + 3) % 4))
 }
 
@@ -59,7 +59,7 @@ export class Keychain {
     salt:Uint8Array
     mainKeyPromise:Promise<CryptoKey>
     metaKeyPromise:Promise<CryptoKey>
-    authTokenPromise:Promise<ArrayBuffer>
+    authTokenPromise:Promise<Uint8Array>
 
     constructor (key?:string|Uint8Array, salt?:string|Uint8Array) {
         this.key = decodeBits(key)
@@ -115,28 +115,50 @@ export class Keychain {
         return arrayToB64Url(this.key)
     }
 
+    /**
+     * Get the salt as base64 string
+     */
     get saltB64 ():string {
         return arrayToB64(this.salt)
     }
 
-    async authToken ():Promise<ArrayBuffer> {
+    /**
+     * get a promise for the auth token.
+     * @returns {Promise<Uint8Array>}
+     */
+    async authToken ():Promise<Uint8Array> {
         return await this.authTokenPromise
     }
 
+    /**
+     * Get the auth token as a base64 string
+     */
     async authTokenB64 ():Promise<string> {
         const authToken = await this.authToken()
         return arrayToB64(authToken)
     }
 
+    /**
+     * Get a header string: `Bearer sync-v1 ${authTokenB64}`
+     */
     async authHeader ():Promise<string> {
         const authTokenB64 = await this.authTokenB64()
         return `Bearer sync-v1 ${authTokenB64}`
     }
 
-    setAuthToken (authToken:string|Uint8Array|null):void {
+    /**
+     * Set the auth token
+     * @param authToken The new token
+     */
+    setAuthToken (authToken?:string|Uint8Array):void {
         this.authTokenPromise = Promise.resolve(decodeBits(authToken))
     }
 
+    /**
+     * Take a stream, return an encrypted stream.
+     * @param stream Input stream
+     * @returns {Promise<ReadableStream>}
+     */
     async encryptStream (
         stream:ReadableStream
     ):Promise<ReadableStream> {
@@ -147,6 +169,11 @@ export class Keychain {
         return encryptStream(stream, mainKey)
     }
 
+    /**
+     * Take an encrypted stream, return a decrypted stream.
+     * @param encryptedStream The input (encrypted) stream
+     * @returns The decrypted stream
+     */
     async decryptStream (
         encryptedStream:ReadableStream
     ):Promise<ReadableStream> {
@@ -192,13 +219,13 @@ export class Keychain {
 
     async encryptMeta (meta:Uint8Array):Promise<Uint8Array> {
         if (!(meta instanceof Uint8Array)) {
-            throw new TypeError('meta')
+            throw new TypeError('`meta` should be Uint8Array')
         }
 
-        const iv = webcrypto.getRandomValues(new Uint8Array(IV_LENGTH))
-        const metaKey = await this.metaKeyPromise
+        const iv:Uint8Array = webcrypto.getRandomValues(new Uint8Array(IV_LENGTH))
+        const metaKey:CryptoKey = await this.metaKeyPromise
 
-        const encryptedMetaBuf = await webcrypto.subtle.encrypt(
+        const encryptedMetaBuf:Uint8Array = await webcrypto.subtle.encrypt(
             {
                 name: 'AES-GCM',
                 iv,

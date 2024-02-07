@@ -18,18 +18,21 @@ export class SliceTransformer {
         this.restChunkSize = restChunkSize || firstChunkSize
 
         this.partialChunk = new Uint8Array(this.chunkSize)
-        this.offset = 0 // offset into `partialChunk`
+        this.offset = 0  // offset into `partialChunk`
     }
 
-    send (record, controller) {
+    send (record:Uint8Array, controller:TransformStreamDefaultController):void {
         controller.enqueue(record)
         this.chunkSize = this.restChunkSize
         this.partialChunk = new Uint8Array(this.chunkSize)
         this.offset = 0
     }
 
-    transform (chunk:Uint8Array, controller) {
-        let i = 0 // offset into `chunk`
+    transform (
+        chunk:Uint8Array,
+        controller:TransformStreamDefaultController
+    ):void {
+        let i = 0  // offset into `chunk`
 
         if (this.offset > 0) {
             const len = Math.min(chunk.byteLength, this.chunkSize - this.offset)
@@ -57,7 +60,7 @@ export class SliceTransformer {
         }
     }
 
-    flush (controller) {
+    flush (controller:TransformStreamDefaultController):void {
         if (this.offset > 0) {
             controller.enqueue(this.partialChunk.subarray(0, this.offset))
         }
