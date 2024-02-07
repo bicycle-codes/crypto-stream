@@ -25,7 +25,7 @@ const { value } = await reader.read()
 const asString = new TextDecoder().decode(value)
 console.log('string...', asString)
 
-const imgUrl = new URL('./cheesecake.jpeg', import.meta.url).href
+const imgUrl = new URL('/cheesecake.jpeg', import.meta.url).href
 const requestForImg = await fetch(imgUrl)
 const encryptedImg = await keychain.encryptStream(requestForImg.body!)
 const decryptedStream = await keychain.decryptStream(encryptedImg)
