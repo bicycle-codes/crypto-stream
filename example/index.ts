@@ -1,6 +1,9 @@
 import { FunctionComponent, render } from 'preact'
+import { signal, effect, computed } from '@preact/signals'
 import { html } from 'htm/preact'
 import { Keychain } from '../src/keychain.js'
+import Debug from '@nichoth/debug'
+const debug = Debug()
 
 // Create a new keychain. Since no arguments are specified, the key
 // and salt are generated.
@@ -29,22 +32,49 @@ const imgUrl = new URL('/cheesecake.jpeg', import.meta.url).href
 const requestForImg = await fetch(imgUrl)
 const encryptedImg = await keychain.encryptStream(requestForImg.body!)
 const decryptedStream = await keychain.decryptStream(encryptedImg)
-const res = new Response(decryptedStream)
-const blob = await res.blob()
-const newBlob = new Blob([blob])
-const blobUrl = window.URL.createObjectURL(newBlob)
+
+/**
+ * If a chunk is available to read, the promise will be fulfilled with an
+ * object of the form { value: theChunk, done: false }.
+ *
+ * https://developer.mozilla.org/en-US/docs/Web/API/Streams_API/Using_readable_streams#reading_the_stream
+ */
+const decryptedReader = decryptedStream.getReader()
+const imgSignal = signal<ReadableStreamReadDoneResult<Uint8Array>|null>(null)
+
+const urlSignal = computed(() => {
+    if (!imgSignal.value) return null
+    const newBlob = new Blob([imgSignal.value.value!])
+    const blobUrl = window.URL.createObjectURL(newBlob)
+    return blobUrl
+})
+effect(() => {
+    console.log('the url', urlSignal.value)
+})
 
 const Example:FunctionComponent = function Example () {
+    debug('rendering...', urlSignal.value)
     return html`<div>
-        <p>The cheesecake.jpeg, imported as unencrypted file:</p>
+        <p>The cheesecake.jpeg, linked as unencrypted file:</p>
         <img src="${imgUrl}" />
 
         <p>
             Cheesecake, after requesting via <code>fetch</code>, encrypting,
             then decrypting:
         </p>
-        <img src="${blobUrl}" />
+        <img src="${urlSignal.value}" />
     </div>`
 }
 
 render(html`<${Example} />`, document.getElementById('root')!)
+
+imgSignal.value = await recursiveRead(decryptedReader, null)
+
+async function recursiveRead (
+    reader:ReadableStreamDefaultReader,
+    res:ReadableStreamReadResult<Uint8Array>|null
+):Promise<ReadableStreamReadDoneResult<Uint8Array>> {
+    const newResult = await reader.read()
+    if (newResult.done) return { ...res, done: true as const }
+    return recursiveRead(reader, newResult)
+}
