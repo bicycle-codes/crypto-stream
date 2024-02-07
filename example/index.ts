@@ -1,5 +1,5 @@
 import { FunctionComponent, render } from 'preact'
-import { signal, effect, computed } from '@preact/signals'
+import { signal, computed } from '@preact/signals'
 import { html } from 'htm/preact'
 import { Keychain } from '../src/keychain.js'
 import Debug from '@nichoth/debug'
@@ -31,7 +31,6 @@ console.log('string...', asString)
 const imgUrl = new URL('/cheesecake.jpeg', import.meta.url).href
 const requestForImg = await fetch(imgUrl)
 const encryptedImg = await keychain.encryptStream(requestForImg.body!)
-const decryptedStream = await keychain.decryptStream(encryptedImg)
 
 /**
  * If a chunk is available to read, the promise will be fulfilled with an
@@ -39,7 +38,6 @@ const decryptedStream = await keychain.decryptStream(encryptedImg)
  *
  * https://developer.mozilla.org/en-US/docs/Web/API/Streams_API/Using_readable_streams#reading_the_stream
  */
-const decryptedReader = decryptedStream.getReader()
 const imgSignal = signal<ReadableStreamReadDoneResult<Uint8Array>|null>(null)
 
 const urlSignal = computed(() => {
@@ -47,9 +45,6 @@ const urlSignal = computed(() => {
     const newBlob = new Blob([imgSignal.value.value!])
     const blobUrl = window.URL.createObjectURL(newBlob)
     return blobUrl
-})
-effect(() => {
-    console.log('the url', urlSignal.value)
 })
 
 const Example:FunctionComponent = function Example () {
@@ -68,6 +63,11 @@ const Example:FunctionComponent = function Example () {
 
 render(html`<${Example} />`, document.getElementById('root')!)
 
+/**
+ * Pretend `encryptedImg` stream came from a server or something
+ */
+const decryptedStream = await keychain.decryptStream(encryptedImg)
+const decryptedReader = decryptedStream.getReader()
 imgSignal.value = await recursiveRead(decryptedReader, null)
 
 async function recursiveRead (
@@ -76,5 +76,5 @@ async function recursiveRead (
 ):Promise<ReadableStreamReadDoneResult<Uint8Array>> {
     const newResult = await reader.read()
     if (newResult.done) return { ...res, done: true as const }
-    return recursiveRead(reader, newResult)
+    return await recursiveRead(reader, newResult)
 }
