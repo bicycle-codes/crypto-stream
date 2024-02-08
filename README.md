@@ -43,6 +43,20 @@ const plaintextStream = await keychain.decryptStream(encryptedStream)
 See [./example](./example/index.ts) for a version that uses blobs + a
 local `vite` server.
 
+```js
+const encryptedData = await fetch(imgUrl)
+const decryptedStream = await keychain.decryptStream(encryptedData.body)
+const response = new Response(decryptedStream)
+const newBlob = new Blob([await response.blob()])
+const blobUrl = window.URL.createObjectURL(newBlob)
+
+// ...
+
+function Component () {
+    return html`<img src="${blobUrl}" />`
+}
+```
+
 ## API
 
 ### `new Keychain([key, [salt]])`

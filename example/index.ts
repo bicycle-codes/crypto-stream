@@ -75,6 +75,8 @@ async function recursiveRead (
     res:ReadableStreamReadResult<Uint8Array>|null
 ):Promise<ReadableStreamReadDoneResult<Uint8Array>> {
     const newResult = await reader.read()
-    if (newResult.done) return { ...res, done: true as const }
+    if (newResult.done) {
+        return { ...res, done: true as const }
+    }
     return await recursiveRead(reader, newResult)
 }
