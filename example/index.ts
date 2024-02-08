@@ -38,11 +38,12 @@ const encryptedImg = await keychain.encryptStream(requestForImg.body!)
  *
  * https://developer.mozilla.org/en-US/docs/Web/API/Streams_API/Using_readable_streams#reading_the_stream
  */
-const imgSignal = signal<ReadableStreamReadDoneResult<Uint8Array>|null>(null)
+// const imgSignal = signal<ReadableStreamReadDoneResult<Uint8Array>|null>(null)
+const imgSignal = signal<Blob|null>(null)
 
 const urlSignal = computed(() => {
     if (!imgSignal.value) return null
-    const newBlob = new Blob([imgSignal.value.value!])
+    const newBlob = new Blob([imgSignal.value])
     const blobUrl = window.URL.createObjectURL(newBlob)
     return blobUrl
 })
@@ -66,17 +67,19 @@ render(html`<${Example} />`, document.getElementById('root')!)
 /**
  * Pretend `encryptedImg` stream came from a server or something
  */
-const decryptedStream = await keychain.decryptStream(encryptedImg)
-const decryptedReader = decryptedStream.getReader()
-imgSignal.value = await recursiveRead(decryptedReader, null)
+imgSignal.value = await new Response(encryptedImg).blob()
 
-async function recursiveRead (
-    reader:ReadableStreamDefaultReader,
-    res:ReadableStreamReadResult<Uint8Array>|null
-):Promise<ReadableStreamReadDoneResult<Uint8Array>> {
-    const newResult = await reader.read()
-    if (newResult.done) {
-        return { ...res, done: true as const }
-    }
-    return await recursiveRead(reader, newResult)
-}
+// const decryptedStream = await keychain.decryptStream(encryptedImg)
+// const decryptedReader = decryptedStream.getReader()
+// imgSignal.value = await recursiveRead(decryptedReader, null)
+
+// async function recursiveRead (
+//     reader:ReadableStreamDefaultReader,
+//     res:ReadableStreamReadResult<Uint8Array>|null
+// ):Promise<ReadableStreamReadDoneResult<Uint8Array>> {
+//     const newResult = await reader.read()
+//     if (newResult.done) {
+//         return { ...res, done: true as const }
+//     }
+//     return await recursiveRead(reader, newResult)
+// }
