@@ -47,8 +47,7 @@ local `vite` server.
 const encryptedData = await fetch(imgUrl)
 const decryptedStream = await keychain.decryptStream(encryptedData.body)
 const response = new Response(decryptedStream)
-const newBlob = new Blob([await response.blob()])
-const blobUrl = window.URL.createObjectURL(newBlob)
+const blobUrl = window.URL.createObjectURL(await response.blob())
 
 // ...
 
