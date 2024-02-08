@@ -160,8 +160,8 @@ export class Keychain {
      * @returns {Promise<ReadableStream>}
      */
     async encryptStream (
-        stream:ReadableStream
-    ):Promise<ReadableStream> {
+        stream:ReadableStream<Uint8Array>
+    ):Promise<ReadableStream<Uint8Array>> {
         if (!(stream instanceof ReadableStream)) {
             throw new TypeError('This is not a readable stream')
         }
@@ -175,8 +175,8 @@ export class Keychain {
      * @returns The decrypted stream
      */
     async decryptStream (
-        encryptedStream:ReadableStream
-    ):Promise<ReadableStream> {
+        encryptedStream:ReadableStream<Uint8Array>
+    ):Promise<ReadableStream<Uint8Array>> {
         if (!(encryptedStream instanceof ReadableStream)) {
             throw new TypeError('encryptedStream is not a ReadableStream')
         }

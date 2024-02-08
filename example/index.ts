@@ -38,6 +38,7 @@ const encryptedImg = await keychain.encryptStream(requestForImg.body!)
  *
  * https://developer.mozilla.org/en-US/docs/Web/API/Streams_API/Using_readable_streams#reading_the_stream
  */
+
 // const imgSignal = signal<ReadableStreamReadDoneResult<Uint8Array>|null>(null)
 const imgSignal = signal<Blob|null>(null)
 
@@ -68,6 +69,8 @@ render(html`<${Example} />`, document.getElementById('root')!)
  * Pretend `encryptedImg` stream came from a server or something
  */
 imgSignal.value = await new Response(encryptedImg).blob()
+
+// encryptedImg.toArray()
 
 // const decryptedStream = await keychain.decryptStream(encryptedImg)
 // const decryptedReader = decryptedStream.getReader()
