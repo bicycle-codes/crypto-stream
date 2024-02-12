@@ -25,7 +25,7 @@
     "one-webcrypto": "^1.0.3"
   },
   "devDependencies": {
-    "@nichoth/debug": "^0.5.0",
+    "@nichoth/debug": "^0.6.1",
     "@nichoth/tapzero": "^0.8.4",
     "@preact/preset-vite": "^2.8.1",
     "@preact/signals": "^1.2.2",
