@@ -8,7 +8,7 @@
     "./dist/*"
   ],
   "scripts": {
-    "lint": "standardx -v \"./**/*.ts\"",
+    "lint": "eslint \"./**/*.{ts,js}\"",
     "test": "npm run lint && esbuild --bundle test/index.ts | node --input-type=module | tap-arc",
     "test:electron": "esbuild --bundle test/index.ts | tape-run | tap-arc",
     "test-tape-run": "cat test/index.html | tape-run --input=html --static=test | tap-arc",
@@ -31,15 +31,16 @@
     "@preact/signals": "^1.2.2",
     "@typescript-eslint/parser": "^6.20.0",
     "auto-changelog": "^2.4.0",
-    "esbuild": "^0.20.0",
+    "esbuild": "^0.20.1",
+    "eslint": "^8.57.0",
+    "eslint-config-standard": "^17.1.0",
     "htm": "^3.1.1",
-    "postcss-nesting": "^12.0.2",
-    "preact": "^10.19.3",
-    "standardx": "^7.0.0",
+    "postcss-nesting": "^12.0.3",
+    "preact": "^10.19.6",
     "tap-arc": "^1.2.2",
     "tape-run": "^11.0.0",
     "typescript": "^5.3.3",
-    "vite": "^5.0.12"
+    "vite": "^5.1.4"
   },
   "exports": {
     ".": {
