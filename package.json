@@ -29,7 +29,8 @@
     "@nichoth/tapzero": "^0.8.4",
     "@preact/preset-vite": "^2.8.1",
     "@preact/signals": "^1.2.2",
-    "@typescript-eslint/parser": "^6.20.0",
+    "@typescript-eslint/parser": "^7.1.1",
+    "@typescript-eslint/eslint-plugin": "^7.1.1",
     "auto-changelog": "^2.4.0",
     "esbuild": "^0.20.1",
     "eslint": "^8.57.0",
@@ -40,7 +41,7 @@
     "tap-arc": "^1.2.2",
     "tape-run": "^11.0.0",
     "typescript": "^5.3.3",
-    "vite": "^5.1.4"
+    "vite": "^5.1.5"
   },
   "exports": {
     ".": {
