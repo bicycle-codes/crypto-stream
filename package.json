@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "lint": "eslint \"./**/*.{ts,js}\"",
-    "test": "npm run lint && esbuild --bundle test/index.ts | node --input-type=module | tap-spec",
+    "test": "npm run lint && esbuild --sourcemap --bundle test/index.ts | node --input-type=module | tap-spec",
     "test:electron": "esbuild --bundle test/index.ts | tape-run | tap-spec",
     "test-tape-run": "cat test/index.html | tape-run --input=html --static=test | tap-spec",
     "build": "mkdir -p ./dist && rm -rf ./dist/* && tsc --project tsconfig.build.json",
