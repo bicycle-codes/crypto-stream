@@ -7,7 +7,7 @@ import { concatStreams } from './concat-streams.js'
 import { transformStream } from './transform-stream.js'
 import { ExtractTransformer } from './extract-transformer.js'
 import { SliceTransformer } from './slice-transformer.js'
-import { webcrypto } from 'one-webcrypto'
+import { webcrypto } from '@bicycle-codes/one-webcrypto'
 
 const MODE_ENCRYPT = 'encrypt'
 const MODE_DECRYPT = 'decrypt'
@@ -278,7 +278,7 @@ class ECETransformer {
             {
                 name: 'HKDF',
                 hash: 'SHA-256',
-                salt: this.salt,
+                salt: this.salt!,
                 info: encoder.encode('Content-Encoding: aes128gcm\0')
             },
             this.secretKey,
@@ -296,7 +296,7 @@ class ECETransformer {
             {
                 name: 'HKDF',
                 hash: 'SHA-256',
-                salt: this.salt,
+                salt: this.salt!,
                 info: encoder.encode('Content-Encoding: nonce\0')
             },
             this.secretKey,

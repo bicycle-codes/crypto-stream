@@ -1,4 +1,4 @@
-import { webcrypto } from 'one-webcrypto'
+import { webcrypto } from '@bicycle-codes/one-webcrypto'
 import base64 from 'base64-js'
 import {
     decryptStream,
@@ -225,7 +225,7 @@ export class Keychain {
         const iv:Uint8Array = webcrypto.getRandomValues(new Uint8Array(IV_LENGTH))
         const metaKey:CryptoKey = await this.metaKeyPromise
 
-        const encryptedMetaBuf:Uint8Array = await webcrypto.subtle.encrypt(
+        const encryptedMetaBuf:ArrayBuffer = await webcrypto.subtle.encrypt(
             {
                 name: 'AES-GCM',
                 iv,

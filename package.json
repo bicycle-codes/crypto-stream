@@ -21,16 +21,16 @@
     "prepublishOnly": "npm run build && npm run build:cjs"
   },
   "dependencies": {
-    "base64-js": "^1.5.1",
-    "one-webcrypto": "^1.0.3"
+    "@bicycle-codes/one-webcrypto": "^1.1.2",
+    "base64-js": "^1.5.1"
   },
   "devDependencies": {
     "@bicycle-codes/debug": "^0.6.1",
     "@bicycle-codes/tapzero": "^0.8.4",
     "@preact/preset-vite": "^2.8.1",
     "@preact/signals": "^1.2.2",
-    "@typescript-eslint/parser": "^8.0.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
     "auto-changelog": "^2.4.0",
     "esbuild": "^0.23.0",
     "eslint": "^8.57.0",
