@@ -9,6 +9,31 @@ Streaming encryption for the browser, based on
 
 <!-- toc -->
 
+- [install](#install)
+- [fork](#fork)
+- [example](#example)
+  * [example with blobs](#example-with-blobs)
+- [API](#api)
+  * [`new Keychain([key, [salt]])`](#new-keychainkey-salt)
+  * [`keychain.key`](#keychainkey)
+  * [`keychain.keyB64`](#keychainkeyb64)
+  * [`keychain.salt`](#keychainsalt)
+  * [`keychain.saltB64`](#keychainsaltb64)
+  * [`keychain.authToken()`](#keychainauthtoken)
+  * [`keychain.authTokenB64()`](#keychainauthtokenb64)
+  * [`keychain.authHeader()`](#keychainauthheader)
+  * [`keychain.setAuthToken(authToken)`](#keychainsetauthtokenauthtoken)
+  * [`keychain.encryptStream(stream)`](#keychainencryptstreamstream)
+  * [`keychain.decryptStream(encryptedStream)`](#keychaindecryptstreamencryptedstream)
+  * [`keychain.decryptStreamRange(offset, length, totalEncryptedLength)`](#keychaindecryptstreamrangeoffset-length-totalencryptedlength)
+  * [`keychain.encryptMeta(meta)`](#keychainencryptmetameta)
+  * [`keychain.decryptMeta(ivEncryptedMeta)`](#keychaindecryptmetaivencryptedmeta)
+  * [`plaintextSize(encryptedSize)`](#plaintextsizeencryptedsize)
+  * [`encryptedSize(plaintextSize)`](#encryptedsizeplaintextsize)
+- [credits](#credits)
+
+<!-- tocstop -->
+
 ## install
 ```sh
 npm i -S @bicycle-codes/crypto-stream
