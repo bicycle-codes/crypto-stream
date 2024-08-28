@@ -1,4 +1,4 @@
-import { test } from '@nichoth/tapzero'
+import { test } from '@bicycle-codes/tapzero'
 import base64 from 'base64-js'
 import { webcrypto } from 'one-webcrypto'
 import { Keychain } from '../src/index.js'
