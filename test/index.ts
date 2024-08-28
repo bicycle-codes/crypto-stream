@@ -1,6 +1,6 @@
 import { test } from '@bicycle-codes/tapzero'
 import base64 from 'base64-js'
-import { webcrypto } from 'one-webcrypto'
+import { webcrypto } from '@bicycle-codes/one-webcrypto'
 import { Keychain } from '../src/index.js'
 
 test('keychain properties', async t => {
