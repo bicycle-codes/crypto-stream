@@ -2,7 +2,7 @@ import { FunctionComponent, render } from 'preact'
 import { signal, computed } from '@preact/signals'
 import { html } from 'htm/preact'
 import { Keychain } from '../src/keychain.js'
-import Debug from '@nichoth/debug'
+import Debug from '@bicycle-codes/debug'
 const debug = Debug()
 
 // Create a new keychain. Since no arguments are specified, the key

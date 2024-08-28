@@ -9,9 +9,9 @@
   ],
   "scripts": {
     "lint": "eslint \"./**/*.{ts,js}\"",
-    "test": "npm run lint && esbuild --bundle test/index.ts | node --input-type=module | tap-arc",
-    "test:electron": "esbuild --bundle test/index.ts | tape-run | tap-arc",
-    "test-tape-run": "cat test/index.html | tape-run --input=html --static=test | tap-arc",
+    "test": "npm run lint && esbuild --bundle test/index.ts | node --input-type=module | tap-spec",
+    "test:electron": "esbuild --bundle test/index.ts | tape-run | tap-spec",
+    "test-tape-run": "cat test/index.html | tape-run --input=html --static=test | tap-spec",
     "build": "mkdir -p ./dist && rm -rf ./dist/* && tsc --project tsconfig.build.json",
     "build:cjs": "esbuild src/*.ts --format=cjs --tsconfig=tsconfig.build.json --keep-names --outdir=./dist --out-extension:.js=.cjs",
     "start": "vite",
@@ -25,8 +25,8 @@
     "one-webcrypto": "^1.0.3"
   },
   "devDependencies": {
-    "@nichoth/debug": "^0.6.1",
-    "@nichoth/tapzero": "^0.8.4",
+    "@bicycle-codes/debug": "^0.6.1",
+    "@bicycle-codes/tapzero": "^0.8.4",
     "@preact/preset-vite": "^2.8.1",
     "@preact/signals": "^1.2.2",
     "@typescript-eslint/parser": "^8.0.0",
@@ -38,7 +38,7 @@
     "htm": "^3.1.1",
     "postcss-nesting": "^13.0.0",
     "preact": "^10.19.6",
-    "tap-arc": "^1.2.2",
+    "tap-spec": "^5.0.0",
     "tape-run": "^11.0.0",
     "typescript": "^5.3.3",
     "vite": "^5.1.5"
@@ -78,5 +78,5 @@
   "bugs": {
     "url": "https://github.com/bicycle-codes/crypto-stream/issues"
   },
-  "homepage": "https://github.com/bicycle-codes/crypto-stream#readme"
+  "homepage": "https://github.com/bicycle-codes/crypto-stream"
 }
