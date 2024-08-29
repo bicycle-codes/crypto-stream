@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "@bicycle-codes/debug": "^0.6.1",
-    "@bicycle-codes/tapzero": "^0.8.4",
+    "@bicycle-codes/tapzero": "^0.10.3",
     "@preact/preset-vite": "^2.8.1",
     "@preact/signals": "^1.2.2",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
