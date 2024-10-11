@@ -62,7 +62,6 @@
     }
   },
   "author": "nichoth <nichoth@gmail.com> (https://nichoth.com)",
-  "license": "MIT",
   "directories": {
     "example": "example",
     "test": "test"
@@ -80,5 +79,6 @@
   "bugs": {
     "url": "https://github.com/bicycle-codes/crypto-stream/issues"
   },
-  "homepage": "https://github.com/bicycle-codes/crypto-stream"
+  "homepage": "https://github.com/bicycle-codes/crypto-stream",
+  "license": "MIT"
 }

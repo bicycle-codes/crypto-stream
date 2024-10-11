@@ -61,8 +61,8 @@ const encryptedStream = await keychain.encryptStream(stream)
 // However, for this example, we'll just decrypt the stream immediately
 const plaintextStream = await keychain.decryptStream(encryptedStream)
 
-// Now, you can use `plaintextStream` and it will be identical to if you had
-// used `stream`.
+// Now, you can use `plaintextStream` and it will be identical
+// to if you had used `stream`.
 ```
 
 ### example with blobs
@@ -71,6 +71,8 @@ See [./example](./example/index.ts) for a version that uses blobs + a
 local `vite` server.
 
 ```js
+import { Keychain } from '@bicycle-codes/crypto-stream'
+
 const encryptedData = await fetch(imgUrl)
 const decryptedStream = await keychain.decryptStream(encryptedData.body)
 const response = new Response(decryptedStream)
