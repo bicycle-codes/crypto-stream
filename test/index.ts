@@ -6,8 +6,11 @@ import { Keychain } from '../src/index.js'
 import './metadata.js'
 import './stream.js'
 
+let keychain:InstanceType<typeof Keychain>
+let salt:Uint8Array
 test('keychain properties', async t => {
-    const keychain = new Keychain()
+    keychain = new Keychain()
+    salt = keychain.salt
 
     t.ok(keychain.key instanceof Uint8Array)
     t.equal(keychain.key.byteLength, 16)
@@ -32,6 +35,22 @@ test('keychain properties', async t => {
     const authHeader = await keychain.authHeader()
     t.equal(typeof authHeader, 'string')
     t.equal(authHeader, `Bearer sync-v1 ${authTokenB64}`)
+})
+
+test('auth tokens', async t => {
+    // generate a new key, re-use the same salt
+    const newKeychain = new Keychain(undefined, salt)
+    const oldKey = keychain.keyB64
+    const newKey = newKeychain.keyB64
+    t.ok(oldKey !== newKey, 'should have different keys')
+    t.ok(keychain.saltB64 === newKeychain.saltB64, 'should have the same salt')
+    const tokens = await Promise.all([
+        keychain.authTokenB64(),
+        newKeychain.authTokenB64()
+    ])
+
+    t.ok(tokens[0] !== tokens[1],
+        'should get a different token given different keys')
 })
 
 test('keychain from given key and salt (Uint8Array)', async t => {
