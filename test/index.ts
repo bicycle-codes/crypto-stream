@@ -3,6 +3,9 @@ import base64 from 'base64-js'
 import { webcrypto } from '@bicycle-codes/one-webcrypto'
 import { Keychain } from '../src/index.js'
 
+import './metadata.js'
+import './stream.js'
+
 test('keychain properties', async t => {
     const keychain = new Keychain()
 
