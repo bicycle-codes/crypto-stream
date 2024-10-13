@@ -218,7 +218,7 @@ encryptStream (stream:ReadableStream):Promise<ReadableStream>
 
 Type: `Function`
 
-Returns: `Promise[ReadableStream]`
+Returns: `Promise<ReadableStream>`
 
 Returns a `Promise` that resolves to a `ReadableStream` encryption stream that
 consumes the data in `stream` and returns an encrypted version. Data is
@@ -234,7 +234,7 @@ A WHATWG readable stream used as a data source for the encrypted stream.
 
 Type: `Function`
 
-Returns: `Promise[ReadableStream]`
+Returns: `Promise<ReadableStream>`
 
 Returns a `Promise` that resolves to a `ReadableStream` decryption stream that
 consumes the data in `encryptedStream` and returns a plaintext version.
@@ -298,7 +298,7 @@ The metadata buffer to encrypt.
 decryptMeta (ivEncryptedMeta:Uint8Array):Promise<Uint8Array>
 ```
 
-Returns: `Promise[Uint8Array]`
+Returns: `Promise<Uint8Array>`
 
 Returns a `Promise` that resolves to a decrypted version of `encryptedMeta`.
 
