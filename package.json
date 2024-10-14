@@ -27,6 +27,7 @@
     "base64-js": "^1.5.1"
   },
   "devDependencies": {
+    "@bicycle-codes/crypto-util": "^0.2.4",
     "@bicycle-codes/debug": "^0.6.1",
     "@bicycle-codes/tapzero": "^0.10.5",
     "@preact/preset-vite": "^2.8.1",
@@ -44,6 +45,7 @@
     "tap-spec": "^5.0.0",
     "tape-run": "^11.0.0",
     "typescript": "^5.3.3",
+    "uint8arrays": "^5.1.0",
     "vite": "^5.1.5"
   },
   "exports": {

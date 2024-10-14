@@ -5,14 +5,15 @@
 
 import { concatStreams } from './concat-streams.js'
 import { transformStream } from './transform-stream.js'
-import { ExtractTransformer } from './extract-transformer.js'
 import { SliceTransformer } from './slice-transformer.js'
 import { webcrypto } from '@bicycle-codes/one-webcrypto'
+import { ExtractTransformer } from './extract-transformer.js'
+import { generateSalt } from './util.js'
 
 const MODE_ENCRYPT = 'encrypt'
 const MODE_DECRYPT = 'decrypt'
-const KEY_LENGTH = 16
-const TAG_LENGTH = 16
+export const KEY_LENGTH = 16
+export const TAG_LENGTH = 16
 const NONCE_LENGTH = 12
 const RECORD_SIZE = 64 * 1024
 const HEADER_LENGTH = KEY_LENGTH + 4 + 1 // salt + record size + idlen
@@ -73,10 +74,10 @@ export function plaintextSize (encryptedSize:number, rs = RECORD_SIZE):number {
  * salt:      Uint8Array containing salt of KEY_LENGTH length, optional
  */
 export function encryptStream (
-    input,
-    secretKey,
-    rs = RECORD_SIZE,
-    salt = generateSalt(KEY_LENGTH)
+    input:ReadableStream,
+    secretKey:CryptoKey,
+    rs:number = RECORD_SIZE,
+    salt:Uint8Array = generateSalt(KEY_LENGTH)
 ) {
     const stream = transformStream(
         input,
@@ -222,12 +223,6 @@ function checkSecretKey (secretKey:CryptoKey):void {
     if (!secretKey.usages.includes('deriveBits')) {
         throw new Error('Invalid key: usages must include deriveBits')
     }
-}
-
-function generateSalt (len:number):Uint8Array {
-    const salt = new Uint8Array(len)
-    webcrypto.getRandomValues(salt)
-    return salt
 }
 
 class ECETransformer {

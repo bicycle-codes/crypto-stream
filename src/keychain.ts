@@ -1,9 +1,14 @@
 import { webcrypto } from '@bicycle-codes/one-webcrypto'
+import {
+    randomBuf,
+    joinBufs,
+} from '@bicycle-codes/crypto-util'
 import base64 from 'base64-js'
 import {
     decryptStream,
     decryptStreamRange,
-    encryptStream
+    encryptStream,
+    KEY_LENGTH,
 } from './ece.js'
 
 export {
@@ -167,6 +172,66 @@ export class Keychain {
         }
         const mainKey = await this.mainKeyPromise
         return encryptStream(stream, mainKey)
+    }
+
+    /**
+     * Encrypt and return some data; don't stream.
+     *
+     * @param bytes 
+     * @param opts 
+     * @returns {Promise<Uint8Array>}
+     */
+    async encryptBytes (
+        bytes:ArrayBuffer|Uint8Array,
+        opts?:{ iv?:Uint8Array },
+    ):Promise<Uint8Array> {
+        const iv = opts?.iv || randomBuf(12)
+        const encryptedRecordBuf = await webcrypto.subtle.encrypt(
+            {
+                name: 'AES-GCM',
+                iv,
+            },
+            await this.generateKey(),
+            bytes
+        )
+
+        return joinBufs(iv, encryptedRecordBuf)
+    }
+
+    /**
+     * Decrypt in memory, not streaming.
+     */
+    async decryptBytes (
+        bytes:Uint8Array,
+    ):Promise<ArrayBuffer> {
+        const key = await this.generateKey()
+        // prepend the iv to the encrypted text
+        const iv = bytes.slice(0, 12)
+        const cipherBytes = bytes.slice(12)
+        const msgBuf = await webcrypto.subtle.decrypt({
+            name: 'AES-GCM',
+            iv
+        }, key, cipherBytes)
+
+        return msgBuf
+    }
+
+    async generateKey ():Promise<CryptoKey> {
+        return webcrypto.subtle.deriveKey(
+            {
+                name: 'HKDF',
+                hash: 'SHA-256',
+                salt: this.salt!,
+                info: encoder.encode('Content-Encoding: aes128gcm\0')
+            },
+            (await this.mainKeyPromise),
+            {
+                name: 'AES-GCM',
+                length: KEY_LENGTH * 8
+            },
+            false,
+            ['encrypt', 'decrypt']
+        )
     }
 
     /**
