@@ -26,7 +26,10 @@ const encoder = new TextEncoder()
  * plaintextSize: int containing plaintext size
  * rs:            int containing record size, optional
  */
-export function encryptedSize (plaintextSize:number, rs = RECORD_SIZE):number {
+export function encryptedSize (
+    plaintextSize:number,
+    rs:number = RECORD_SIZE
+):number {
     if (!Number.isInteger(plaintextSize)) {
         throw new TypeError('plaintextSize')
     }
@@ -48,7 +51,10 @@ export function encryptedSize (plaintextSize:number, rs = RECORD_SIZE):number {
  * encryptedSize: int containing encrypted size
  * rs:            int containing record size, optional
  */
-export function plaintextSize (encryptedSize:number, rs = RECORD_SIZE):number {
+export function plaintextSize (
+    encryptedSize:number,
+    rs:number = RECORD_SIZE
+):number {
     if (!Number.isInteger(encryptedSize)) {
         throw new TypeError('encryptedSize')
     }
