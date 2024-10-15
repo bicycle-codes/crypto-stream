@@ -30,6 +30,8 @@ Streaming encryption for the browser, based on
   * [`keychain.decryptStreamRange(offset, length, totalEncryptedLength)`](#keychaindecryptstreamrangeoffset-length-totalencryptedlength)
   * [`keychain.encryptMeta(meta)`](#keychainencryptmetameta)
   * [`keychain.decryptMeta(ivEncryptedMeta)`](#keychaindecryptmetaivencryptedmeta)
+  * [`keychain.encryptBytes(bytes)`](#keychainencryptbytesbytes)
+  * [`keychain.decryptBytes(bytes)`](#keychaindecryptbytesbytes)
   * [`plaintextSize(encryptedSize)`](#plaintextsizeencryptedsize)
   * [`encryptedSize(plaintextSize)`](#encryptedsizeplaintextsize)
 - [credits](#credits)
