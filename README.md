@@ -310,17 +310,44 @@ Type: `Uint8Array`
 
 The encrypted metadata buffer to decrypt.
 
+### `keychain.encryptBytes(bytes)`
+
+```ts
+async function encryptBytes (
+    bytes:ArrayBuffer|Uint8Array,
+    opts?:{ iv?:Uint8Array },
+):Promise<Uint8Array>
+```
+
+Encrypt and return the given data in-memory, not using streams.
+
+### `keychain.decryptBytes(bytes)`
+
+```ts
+async function decryptBytes (
+    bytes:Uint8Array,
+):Promise<ArrayBuffer>
+```
+
+Decrypt the given data in-memory, without streaming.
+
 ### `plaintextSize(encryptedSize)`
 
 ```ts
-function plaintextSize (encryptedSize:number, rs = RECORD_SIZE):number
+function plaintextSize (
+  encryptedSize:number,
+  rs:number = RECORD_SIZE
+):number
 ```
 
 Given an encrypted size, return the corresponding plaintext size.
 
 ### `encryptedSize(plaintextSize)`
 ```ts
-function encryptedSize (plaintextSize:number, rs = RECORD_SIZE):number
+function encryptedSize (
+  plaintextSize:number,
+  rs:number = RECORD_SIZE
+):number
 ```
 
 Given a plaintext size, return the corresponding encrypted size.
