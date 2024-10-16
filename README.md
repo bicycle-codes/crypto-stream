@@ -7,6 +7,8 @@
 Streaming encryption for the browser, based on
 [Encrypted Content-Encoding for HTTP (RFC 8188)](https://tools.ietf.org/html/rfc8188)
 
+
+
 <details><summary><h2>Contents</h2></summary>
 
 <!-- toc -->

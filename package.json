@@ -23,7 +23,6 @@
   },
   "dependencies": {
     "@bicycle-codes/one-webcrypto": "^1.1.2",
-    "@bicycle-codes/simple-aes": "^0.0.27",
     "base64-js": "^1.5.1"
   },
   "devDependencies": {
