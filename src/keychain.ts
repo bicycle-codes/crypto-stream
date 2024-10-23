@@ -144,9 +144,14 @@ export class Keychain {
     }
 
     /**
-     * Get a header string: `Bearer sync-v1 ${authTokenB64}`
+     * Get a header string: `Bearer sync-v1 ${authTokenB64}`.
+     * Pass in a token, or else this will use the `authToken` derived from
+     * the main key.
      */
-    async authHeader ():Promise<string> {
+    async authHeader (tokenString?:string):Promise<string> {
+        if (tokenString) {
+            return `Bearer sync-v1 ${tokenString}`
+        }
         const authTokenB64 = await this.authTokenB64()
         return `Bearer sync-v1 ${authTokenB64}`
     }
@@ -205,7 +210,7 @@ export class Keychain {
         bytes:Uint8Array,
     ):Promise<ArrayBuffer> {
         const key = await this.generateKey()
-        // prepend the iv to the encrypted text
+        // `iv` is prepended to the encrypted text
         const iv = bytes.slice(0, 12)
         const cipherBytes = bytes.slice(12)
         const msgBuf = await webcrypto.subtle.decrypt({

@@ -37,7 +37,7 @@ export function encryptedSize (
         throw new TypeError('rs')
     }
 
-    const chunkMetaLength = TAG_LENGTH + 1  // Chunk metadata, tag and delimiter
+    const chunkMetaLength = TAG_LENGTH + 1   // Chunk metadata, tag and delimiter
     return (
         HEADER_LENGTH +
         plaintextSize +
@@ -62,7 +62,7 @@ export function plaintextSize (
         throw new TypeError('rs')
     }
 
-    const chunkMetaLength = TAG_LENGTH + 1  // Chunk metadata, tag and delimiter
+    const chunkMetaLength = TAG_LENGTH + 1   // Chunk metadata, tag and delimiter
     const encryptedRecordsSize = encryptedSize - HEADER_LENGTH
     return (
         encryptedRecordsSize -
@@ -252,10 +252,13 @@ class ECETransformer {
         if (mode !== MODE_ENCRYPT && mode !== MODE_DECRYPT) {
             throw new Error("mode must be either 'encrypt' or 'decrypt'")
         }
+
         checkSecretKey(secretKey)
+
         if (salt != null && salt.byteLength !== KEY_LENGTH) {
             throw new Error('Invalid salt length')
         }
+
         this.mode = mode
         this.secretKey = secretKey
         this.rs = rs
