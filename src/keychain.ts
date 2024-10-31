@@ -16,7 +16,7 @@ export {
     plaintextSize
 } from './ece.js'
 
-const IV_LENGTH = 16
+const IV_LENGTH = 12
 
 const encoder = new TextEncoder()
 
@@ -221,7 +221,16 @@ export class Keychain {
         return msgBuf
     }
 
-    async generateKey ():Promise<CryptoKey> {
+    /**
+     * Derive a new AES-GCM key from the main key.
+     *
+     * @param {number} [keyLength] Optional size for the key, in bytes, eg,
+     * `16` or `32`.
+     * @returns {Promise<CryptoKey>}
+     */
+    async generateKey (keyLength?:number):Promise<CryptoKey> {
+        const keySize = (keyLength || KEY_LENGTH) * 8
+
         return webcrypto.subtle.deriveKey(
             {
                 name: 'HKDF',
@@ -232,7 +241,7 @@ export class Keychain {
             (await this.mainKeyPromise),
             {
                 name: 'AES-GCM',
-                length: KEY_LENGTH * 8
+                length: keySize
             },
             false,
             ['encrypt', 'decrypt']
