@@ -182,13 +182,18 @@ export class Keychain {
     /**
      * Encrypt and return some data; don't stream.
      *
+     * NOTE: This generates a new key each time it is called, via
+     * `this.generateKey`.
+     *
      * @param bytes 
-     * @param opts 
+     * @param {{ iv?:Uint8Array, size?:number }} [opts] Optional params,
+     * `iv` and `size`. If `size` is omitted, default is 16 bytes. `iv` is
+     * a random 12 bits, will be generated if not passed in.
      * @returns {Promise<Uint8Array>}
      */
     async encryptBytes (
         bytes:ArrayBuffer|Uint8Array,
-        opts?:{ iv?:Uint8Array },
+        opts?:{ iv?:Uint8Array, size?:number },
     ):Promise<Uint8Array> {
         const iv = opts?.iv || randomBuf(12)
         const encryptedRecordBuf = await webcrypto.subtle.encrypt(
@@ -196,7 +201,7 @@ export class Keychain {
                 name: 'AES-GCM',
                 iv,
             },
-            await this.generateKey(),
+            await this.generateKey(opts?.size),
             bytes
         )
 
