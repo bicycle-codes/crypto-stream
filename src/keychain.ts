@@ -20,7 +20,7 @@ const IV_LENGTH = 12
 
 const encoder = new TextEncoder()
 
-function arrayToB64 (array) {
+function arrayToB64 (array:Uint8Array) {
     return base64.fromByteArray(array)
 }
 
