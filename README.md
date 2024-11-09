@@ -48,7 +48,7 @@ npm i -S @bicycle-codes/crypto-stream
 ```
 
 ## fork
-This is a fork of [SocketDev/wormhole-crypto](https://github.com/SocketDev/wormhole-crypto), just adding types.
+This is a fork of [SocketDev/wormhole-crypto](https://github.com/SocketDev/wormhole-crypto).
 
 ## example
 
