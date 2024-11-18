@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "@bicycle-codes/crypto-util": "^0.2.4",
-    "@bicycle-codes/debug": "^0.6.1",
+    "@bicycle-codes/debug": "^0.7.2",
     "@bicycle-codes/tapzero": "^0.10.5",
     "@preact/preset-vite": "^2.8.1",
     "@preact/signals": "^1.2.2",
