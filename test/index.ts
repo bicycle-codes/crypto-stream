@@ -123,7 +123,7 @@ test('.AuthHeader static method', async t => {
 
     const otherHeader = await newKeys.authHeader()
     t.equal(otherHeader, authHeader,
-        'return should to equal to the instance method, given the same keys')
+        'should be equal to the instance method, given the same keys')
 })
 
 test('.Header static method', async t => {
