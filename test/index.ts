@@ -128,6 +128,5 @@ test('.AuthHeader static method', async t => {
 
 test('.Header static method', async t => {
     const header = Keychain.Header('123')
-    t.ok(header.startsWith('Bearer'), 'header should be the right format')
-    t.ok(header.includes('123'), 'should include the string that was passed in')
+    t.equal(header, 'Bearer sync-v1 123', 'should return the right format')
 })
