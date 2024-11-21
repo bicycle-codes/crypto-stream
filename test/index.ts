@@ -106,10 +106,22 @@ test('keychain throws on invalid key or salt', async t => {
 
 test('keychain.setAuthTokenB64', async t => {
     const keychain = new Keychain()
-
     const authToken = webcrypto.getRandomValues(new Uint8Array(16))
     keychain.setAuthToken(authToken)
 
     t.deepEqual(await keychain.authToken(), authToken)
     t.equal(await keychain.authTokenB64(), base64.fromByteArray(authToken))
+})
+
+test('.AuthHeader static method', async t => {
+    const newKeys = new Keychain()
+    const stringMainKey = newKeys.keyB64
+    const authHeader = await Keychain.AuthHeader(stringMainKey, newKeys.saltB64)
+
+    t.equal(typeof authHeader, 'string', 'should return a string')
+    t.ok(authHeader.includes('Bearer'), 'should be the right format')
+
+    const otherHeader = await newKeys.authHeader()
+    t.equal(otherHeader, authHeader,
+        'return should to equal to the instance method, given the same keys')
 })

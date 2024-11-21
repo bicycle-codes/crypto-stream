@@ -114,6 +114,33 @@ export class Keychain {
     }
 
     /**
+     * Get an authentication header as a static method.
+    */
+    static async AuthHeader (secretKey:string, salt:string|Uint8Array) {
+        const key = decodeBits(secretKey)
+        const mainKey = await webcrypto.subtle.importKey(
+            'raw',
+            key,
+            'HKDF',
+            false,
+            ['deriveBits', 'deriveKey']
+        )
+
+        const token = await webcrypto.subtle.deriveBits(
+            {
+                name: 'HKDF',
+                hash: 'SHA-256',
+                salt: decodeBits(salt),
+                info: encoder.encode('authentication')
+            },
+            mainKey,
+            128
+        )
+
+        return `Bearer sync-v1 ${arrayToB64(new Uint8Array(token))}`
+    }
+
+    /**
      * Get the main key as a `base64url` encoded string
      */
     get keyB64 ():string {
