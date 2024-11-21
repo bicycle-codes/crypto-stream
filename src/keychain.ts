@@ -137,7 +137,11 @@ export class Keychain {
             128
         )
 
-        return `Bearer sync-v1 ${arrayToB64(new Uint8Array(token))}`
+        return Keychain.Header(arrayToB64(new Uint8Array(token)))
+    }
+
+    static Header (writeToken:string) {
+        return `Bearer sync-v1 ${writeToken}`
     }
 
     /**

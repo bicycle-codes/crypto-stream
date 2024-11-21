@@ -125,3 +125,9 @@ test('.AuthHeader static method', async t => {
     t.equal(otherHeader, authHeader,
         'return should to equal to the instance method, given the same keys')
 })
+
+test('.Header static method', async t => {
+    const header = Keychain.Header('123')
+    t.ok(header.startsWith('Bearer'), 'header should be the right format')
+    t.ok(header.includes('123'), 'should include the string that was passed in')
+})
