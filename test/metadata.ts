@@ -1,4 +1,4 @@
-import { test } from '@bicycle-codes/tapzero'
+import { test } from '@substrate-system/tapzero'
 import { Keychain } from '../src/index.js'
 
 test('encrypt then decrypt metadata', async t => {
