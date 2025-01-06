@@ -10,13 +10,10 @@ const debug = Debug()
 const keychain = new Keychain()
 
 // Get a WHATWG stream somehow, from fetch(), from a Blob(), etc.
-// const response = await fetch('/')
-// const stream = response.body
 const imgUrl = new URL('/cheesecake.jpeg', import.meta.url).href
 const requestForImg = await fetch(imgUrl)
 
 // Create an encrypted version of that stream
-// const encryptedStream = await keychain.encryptStream(stream!)
 const encryptedSignal = signal<ReadableStream|null>(null)
 const encryptedImg = await keychain.encryptStream(requestForImg.body!)
 encryptedSignal.value = encryptedImg
