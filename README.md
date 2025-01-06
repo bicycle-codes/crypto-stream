@@ -10,6 +10,7 @@
 Streaming encryption for the browser, based on
 [Encrypted Content-Encoding for HTTP (RFC 8188)](https://tools.ietf.org/html/rfc8188)
 
+This uses the [Web Crypto API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API).
 
 
 <details><summary><h2>Contents</h2></summary>
