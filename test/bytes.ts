@@ -1,5 +1,5 @@
 import * as u from 'uint8arrays'
-import { test } from '@bicycle-codes/tapzero'
+import { test } from '@substrate-system/tapzero'
 import { Keychain } from '../src/index.js'
 
 let keychain:InstanceType<typeof Keychain>

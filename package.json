@@ -26,10 +26,10 @@
     "base64-js": "^1.5.1"
   },
   "devDependencies": {
-    "@bicycle-codes/crypto-util": "^0.2.4",
+    "@bicycle-codes/crypto-util": "^0.2.7",
     "@bicycle-codes/debug": "^0.7.2",
-    "@bicycle-codes/tapzero": "^0.10.5",
-    "@preact/preset-vite": "^2.8.1",
+    "@substrate-system/tapzero": "^0.10.13",
+    "@preact/preset-vite": "^2.9.4",
     "@preact/signals": "^2.0.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
@@ -43,9 +43,9 @@
     "preact": "^10.19.6",
     "tap-spec": "^5.0.0",
     "tape-run": "^11.0.0",
-    "typescript": "^5.3.3",
+    "typescript": "^5.7.2",
     "uint8arrays": "^5.1.0",
-    "vite": "^6.0.1"
+    "vite": "^6.0.7"
   },
   "exports": {
     ".": {
