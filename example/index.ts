@@ -1,5 +1,5 @@
 import { FunctionComponent, render } from 'preact'
-import { signal, computed } from '@preact/signals'
+import { signal, computed, effect } from '@preact/signals'
 import { html } from 'htm/preact'
 import { Keychain } from '../src/keychain.js'
 import Debug from '@bicycle-codes/debug'
@@ -10,27 +10,31 @@ const debug = Debug()
 const keychain = new Keychain()
 
 // Get a WHATWG stream somehow, from fetch(), from a Blob(), etc.
-const response = await fetch('/')
-const stream = response.body
-
-// Create an encrypted version of that stream
-const encryptedStream = await keychain.encryptStream(stream!)
-
-// Normally you'd now use `encryptedStream`, e.g. in fetch(), etc.
-// However, for this example, we'll just decrypt the stream immediately
-const plaintextStream = await keychain.decryptStream(encryptedStream)
-
-// Now, you can use `plaintextStream` and it will be identical to if you had
-// used `stream`.
-
-const reader = plaintextStream.getReader()
-const { value } = await reader.read()
-const asString = new TextDecoder().decode(value)
-console.log('string...', asString)
-
+// const response = await fetch('/')
+// const stream = response.body
 const imgUrl = new URL('/cheesecake.jpeg', import.meta.url).href
 const requestForImg = await fetch(imgUrl)
+
+// Create an encrypted version of that stream
+// const encryptedStream = await keychain.encryptStream(stream!)
+const encryptedSignal = signal<ReadableStream|null>(null)
 const encryptedImg = await keychain.encryptStream(requestForImg.body!)
+encryptedSignal.value = encryptedImg
+
+const decryptedSignal = signal<null|Blob>(null)
+
+effect(() => {
+    if (!encryptedSignal.value) return
+
+    (async () => {
+        // Normally you'd now use `encryptedStream`, e.g. in fetch(), etc.
+        // However, for this example, we'll just decrypt the stream immediately
+        const decryptedStream = await keychain.decryptStream(encryptedImg)
+        const decryptedReader = decryptedStream.getReader()
+        const { value } = await decryptedReader.read()
+        decryptedSignal.value = new Blob([value!])
+    })()
+})
 
 /**
  * If a chunk is available to read, the promise will be fulfilled with an
@@ -39,18 +43,15 @@ const encryptedImg = await keychain.encryptStream(requestForImg.body!)
  * https://developer.mozilla.org/en-US/docs/Web/API/Streams_API/Using_readable_streams#reading_the_stream
  */
 
-// const imgSignal = signal<ReadableStreamReadDoneResult<Uint8Array>|null>(null)
-const imgSignal = signal<Blob|null>(null)
-
-const urlSignal = computed(() => {
-    if (!imgSignal.value) return null
-    const newBlob = new Blob([imgSignal.value])
-    const blobUrl = window.URL.createObjectURL(newBlob)
+const blobUrl = computed<string|null>(() => {
+    if (!decryptedSignal.value) return null
+    const blobUrl = window.URL.createObjectURL(decryptedSignal.value)
     return blobUrl
 })
 
 const Example:FunctionComponent = function Example () {
-    debug('rendering...', urlSignal.value)
+    debug('rendering...', blobUrl.value)
+
     return html`<div>
         <p>The cheesecake.jpeg, linked as unencrypted file:</p>
         <img src="${imgUrl}" />
@@ -59,30 +60,9 @@ const Example:FunctionComponent = function Example () {
             Cheesecake, after requesting via <code>fetch</code>, encrypting,
             then decrypting:
         </p>
-        <img src="${urlSignal.value}" />
+
+        <img src="${blobUrl.value}" />
     </div>`
 }
 
 render(html`<${Example} />`, document.getElementById('root')!)
-
-/**
- * Pretend `encryptedImg` stream came from a server or something
- */
-imgSignal.value = await new Response(encryptedImg).blob()
-
-// encryptedImg.toArray()
-
-// const decryptedStream = await keychain.decryptStream(encryptedImg)
-// const decryptedReader = decryptedStream.getReader()
-// imgSignal.value = await recursiveRead(decryptedReader, null)
-
-// async function recursiveRead (
-//     reader:ReadableStreamDefaultReader,
-//     res:ReadableStreamReadResult<Uint8Array>|null
-// ):Promise<ReadableStreamReadDoneResult<Uint8Array>> {
-//     const newResult = await reader.read()
-//     if (newResult.done) {
-//         return { ...res, done: true as const }
-//     }
-//     return await recursiveRead(reader, newResult)
-// }
